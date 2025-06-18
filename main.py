@@ -91,6 +91,7 @@ import visual_effects as vfx
 
 # Import progression system
 from progression_system import ProgressionSystem, GameContext
+from drawing_system import DrawingSystem
 
 # === [CONFIGURATION] ===
 # (Configuration moved to config.py module)
@@ -559,6 +560,9 @@ class TextCache:
 
 g_text_cache = TextCache()
 
+# Drawing system (initialized after fonts are ready)
+g_drawing: Optional[DrawingSystem] = None
+
 # Progression system (initialized in main())
 g_progression: ProgressionSystem
 
@@ -923,7 +927,7 @@ def update_scaled_values() -> None:
         Writes to g_scale_factor, g_font, g_big_font, g_small_font, g_tiny_font
         Reads g_screen_height
     """
-    global g_scale_factor, g_font, g_big_font, g_small_font, g_tiny_font
+    global g_scale_factor, g_font, g_big_font, g_small_font, g_tiny_font, g_drawing
     
     g_scale_factor = min(2.0, g_screen_height / Cfg.reference_height)
     
@@ -933,6 +937,15 @@ def update_scaled_values() -> None:
         g_small_font = pygame.font.Font(None, int(24 * g_scale_factor))
         g_tiny_font = pygame.font.Font(None, int(18 * g_scale_factor))
         g_text_cache.clear()
+        
+        # Initialize drawing system with fonts
+        fonts = {
+            'main': g_font,
+            'big': g_big_font,
+            'small': g_small_font,
+            'tiny': g_tiny_font
+        }
+        g_drawing = DrawingSystem(fonts, g_text_cache, lambda: g_scale_factor)
 
 # === [CONTROLLER SYSTEM] ===
 
