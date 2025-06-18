@@ -4047,13 +4047,20 @@ def render_game_objects(game_surface: pygame.Surface, keys: dict, controller_inp
     Globals:
         Reads g_asteroids, g_enemies, g_game_state
     """
-    draw_powerups(game_surface)
+    if g_drawing:
+        g_drawing.draw_powerups(game_surface, g_powerups)
     
     for asteroid in g_asteroids:
-        draw_asteroid(game_surface, asteroid)
+        if g_drawing:
+            g_drawing.draw_asteroid(game_surface, asteroid, get_polygon_points)
     
     for enemy in g_enemies:
-        draw_enemy(game_surface, enemy)
+        if g_drawing:
+            is_finisher_target = False
+            if g_game_state['finisher']['ready'] and not g_game_state['finisher']['executing']:
+                target = check_finisher_collision(g_ship, g_ship.angle)
+                is_finisher_target = (target == enemy)
+            g_drawing.draw_enemy(game_surface, enemy, is_finisher_target, g_game_state)
     
     if g_game_state['finisher']['ready'] and not g_game_state['finisher']['executing']:
         draw_finisher_target_indicator(game_surface)
@@ -4061,9 +4068,10 @@ def render_game_objects(game_surface: pygame.Surface, keys: dict, controller_inp
     if g_game_state['finisher']['phase'] == FinisherPhase.LOCK_ON:
         draw_lock_on_indicator(game_surface)
     
-    draw_ship(game_surface, keys, controller_input)
-    draw_bullets(game_surface)
-    draw_particles(game_surface)
+    if g_drawing:
+        g_drawing.draw_ship(game_surface, g_ship, keys, controller_input, g_game_state)
+        g_drawing.draw_bullets(game_surface, g_bullets, g_enemy_bullets)
+        g_drawing.draw_particles(game_surface, g_particle_pool)
     
     if g_game_state['finisher']['phase'] == FinisherPhase.IMPACT and g_game_state['finisher']['shockwave_radius'] > 0:
         draw_shockwave(game_surface, 
