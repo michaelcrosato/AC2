@@ -379,125 +379,8 @@ def safe_operation(operation_name: str, func: Callable, *args, **kwargs) -> Opti
 
 # === [DRAWING EFFECTS SYSTEM] ===
 
-class DrawEffects:
-    """Centralized drawing effects to reduce code duplication."""
-    
-    @staticmethod
-    def glow(surface: pygame.Surface, pos: Tuple[float, float], radius: float, 
-             color: Tuple[int, int, int], intensity: float = 1.0, 
-             layers: int = Cfg.glow_default_layers) -> None:
-        """Draw a multi-layered glow effect.
-        
-        Args:
-            surface: Surface to draw on
-            pos: Center position (x, y)
-            radius: Glow radius
-            color: RGB color tuple
-            intensity: Glow intensity (0-1)
-            layers: Number of glow layers
-        """
-        scaled_radius = int(radius)
-        if scaled_radius <= 0:
-            return
-        
-        for i in range(layers):
-            alpha = int((Cfg.glow_layer_alpha_base - i * Cfg.glow_layer_alpha_step) * intensity)
-            if alpha <= 0:
-                continue
-                
-            layer_radius = scaled_radius - i * Cfg.glow_layer_radius_step
-            if layer_radius <= 0:
-                continue
-                
-            glow_surface = pygame.Surface((scaled_radius * 2, scaled_radius * 2), pygame.SRCALPHA)
-            pygame.draw.circle(glow_surface, (*color, alpha), 
-                             (scaled_radius, scaled_radius), layer_radius)
-            surface.blit(glow_surface, (int(pos[0] - scaled_radius), int(pos[1] - scaled_radius)))
-    
-    @staticmethod
-    def polygon_with_flash(surface: pygame.Surface, entity: Union[Asteroid, Enemy], 
-                          points: List[Tuple[float, float]], base_color: Tuple[int, int, int],
-                          border_width: int = 2) -> None:
-        """Draw polygon entity with hit flash support.
-        
-        Args:
-            surface: Surface to draw on
-            entity: Entity with hit_flash attribute
-            points: Polygon points
-            base_color: Normal color when not flashing
-            border_width: Line width
-        """
-        if entity.hit_flash > 0:
-            flash_intensity = entity.hit_flash / Cfg.asteroid_hit_flash_duration
-            flash_color = tuple(int(200 + 55 * flash_intensity) for _ in range(3))
-            pygame.draw.polygon(surface, flash_color, points, max(1, int(3 * g_scale_factor)))
-            
-            # Flash glow
-            DrawEffects.glow(surface, (entity.x, entity.y), 
-                           entity.radius * 2 * g_scale_factor * flash_intensity,
-                           (255, 255, 255), flash_intensity)
-        else:
-            pygame.draw.polygon(surface, base_color, points, max(1, int(border_width * g_scale_factor)))
-    
-    @staticmethod
-    def health_bar(surface: pygame.Surface, entity: Union[Asteroid, Enemy], 
-                  width: int, height: int, offset: int) -> None:
-        """Draw a health bar for any entity with health.
-        
-        Args:
-            surface: Surface to draw on
-            entity: Entity with health and max_health attributes
-            width: Bar width (unscaled)
-            height: Bar height (unscaled)
-            offset: Vertical offset from entity center (unscaled)
-        """
-        if not hasattr(entity, 'health') or not hasattr(entity, 'max_health'):
-            return
-            
-        bar_width = width * g_scale_factor
-        bar_height = height * g_scale_factor
-        bar_x = entity.x - bar_width // 2
-        bar_y = entity.y - offset * g_scale_factor
-        
-        # Background
-        pygame.draw.rect(surface, (50, 50, 50), (bar_x, bar_y, bar_width, bar_height))
-        
-        # Health fill
-        health_percent = entity.health / entity.max_health
-        health_color = (255, int(255 * health_percent), 0)
-        pygame.draw.rect(surface, health_color, (bar_x, bar_y, bar_width * health_percent, bar_height))
-        
-        # Border
-        pygame.draw.rect(surface, Cfg.colors['white'], (bar_x, bar_y, bar_width, bar_height), 1)
-    
-    @staticmethod
-    def floating_text(surface: pygame.Surface, text_obj: FloatingText) -> None:
-        """Draw a floating text effect.
-        
-        Args:
-            surface: Surface to draw on
-            text_obj: FloatingText object
-        """
-        alpha = text_obj.life / Cfg.floating_text_life
-        color = tuple(int(c * alpha) for c in text_obj.color)
-        
-        text_surface = g_small_font.render(text_obj.text, True, color)
-        text_rect = text_surface.get_rect(center=(int(text_obj.x), int(text_obj.y)))
-        surface.blit(text_surface, text_rect)
-    
-    @staticmethod
-    def enemy_health_pips(surface: pygame.Surface, enemy: Enemy) -> None:
-        """Draw health pips for an enemy.
-        
-        Args:
-            surface: Surface to draw on
-            enemy: Enemy object
-        """
-        for i in range(int(enemy.health)):
-            pip_x = enemy.x - Cfg.ui_health_pip_spacing * g_scale_factor + i * Cfg.ui_health_pip_spacing * g_scale_factor
-            pip_y = enemy.y + 20 * g_scale_factor
-            pygame.draw.circle(surface, (255, 100, 100), (int(pip_x), int(pip_y)), 
-                             int(2 * g_scale_factor))
+# === [DRAWING SYSTEM] ===
+# DrawEffects class moved to drawing_system.py module
 
 # === [PARTICLE SYSTEM] ===
 # ParticlePool class moved to particle_system.py module
@@ -2907,15 +2790,15 @@ def draw_asteroid(surface: pygame.Surface, asteroid: Asteroid) -> None:
     glow_intensity = 0.6 + (asteroid.size / Cfg.asteroid_max_size) * 0.4
     glow_color = tuple(int(c * glow_intensity) for c in glow_color)
     
-    DrawEffects.glow(surface, (asteroid.x, asteroid.y), 
-                    asteroid.size * 15 * g_scale_factor, glow_color)
-    
-    DrawEffects.polygon_with_flash(surface, asteroid, points, base_color)
-    
-    if asteroid.is_boss and asteroid.health:
-        DrawEffects.health_bar(surface, asteroid, Cfg.boss_health_bar_width,
-                             Cfg.boss_health_bar_height, 
-                             asteroid.radius + Cfg.boss_health_bar_offset)
+    if g_drawing:
+        g_drawing.glow(surface, (asteroid.x, asteroid.y), 
+                      asteroid.size * 15 * g_scale_factor, glow_color)
+        g_drawing.polygon_with_flash(surface, asteroid, points, base_color)
+        
+        if asteroid.is_boss and asteroid.health:
+            g_drawing.health_bar(surface, asteroid, Cfg.boss_health_bar_width,
+                               Cfg.boss_health_bar_height, 
+                               asteroid.radius + Cfg.boss_health_bar_offset)
 
 def draw_enemy(surface: pygame.Surface, enemy: Enemy) -> None:
     """Draw an enemy entity.
@@ -2932,13 +2815,14 @@ def draw_enemy(surface: pygame.Surface, enemy: Enemy) -> None:
         target = check_finisher_collision(g_ship, g_ship.angle)
         is_finisher_target = (target == enemy)
     
-    if is_finisher_target:
-        pulse = calculate_pulse(g_game_state['frame_count'], 0.1, 0.3, 0.7)
-        DrawEffects.glow(surface, (enemy.x, enemy.y), 25 * pulse * g_scale_factor, 
-                        Cfg.colors['gold'], pulse)
-    else:
-        DrawEffects.glow(surface, (enemy.x, enemy.y), enemy.radius * 1.2 * g_scale_factor,
-                        Cfg.colors['enemy'], 0.8)
+    if g_drawing:
+        if is_finisher_target:
+            pulse = calculate_pulse(g_game_state['frame_count'], 0.1, 0.3, 0.7)
+            g_drawing.glow(surface, (enemy.x, enemy.y), 25 * pulse * g_scale_factor, 
+                          Cfg.colors['gold'], pulse)
+        else:
+            g_drawing.glow(surface, (enemy.x, enemy.y), enemy.radius * 1.2 * g_scale_factor,
+                          Cfg.colors['enemy'], 0.8)
     
     sin_a, cos_a = get_sin_cos(enemy.angle)
     
@@ -2971,11 +2855,12 @@ def draw_enemy(surface: pygame.Surface, enemy: Enemy) -> None:
         warning_y = enemy.y + 20 * g_scale_factor * sin_a
         warning_intensity = (Cfg.enemy_firing_warning_frames - enemy.fire_cooldown) / Cfg.enemy_firing_warning_frames
         warning_radius = int(5 * warning_intensity * g_scale_factor)
-        if warning_radius > 0:
-            DrawEffects.glow(surface, (warning_x, warning_y), warning_radius, 
-                           (255, 200, 0), warning_intensity)
+        if warning_radius > 0 and g_drawing:
+            g_drawing.glow(surface, (warning_x, warning_y), warning_radius, 
+                         (255, 200, 0), warning_intensity)
     
-    DrawEffects.enemy_health_pips(surface, enemy)
+    if g_drawing:
+        g_drawing.enemy_health_pips(surface, enemy)
 
 def draw_ship(surface: pygame.Surface, keys: dict, controller_input: Dict[str, Any]) -> None:
     """Draw the player ship.
@@ -3008,11 +2893,13 @@ def draw_ship(surface: pygame.Surface, keys: dict, controller_input: Dict[str, A
     draw_powerup_auras(surface)
     
     if g_ship.shield_active > 0:
-        DrawEffects.glow(surface, (g_ship.x, g_ship.y), 30 * g_scale_factor, (0, 255, 0))
+        if g_drawing:
+            g_drawing.glow(surface, (g_ship.x, g_ship.y), 30 * g_scale_factor, (0, 255, 0))
         pygame.draw.circle(surface, (0, 255, 0), (int(g_ship.x), int(g_ship.y)), 
                           int(25 * g_scale_factor), max(1, int(2 * g_scale_factor)))
     
-    DrawEffects.glow(surface, (g_ship.x, g_ship.y), 20 * g_scale_factor, Cfg.colors['blue_glow'])
+    if g_drawing:
+        g_drawing.glow(surface, (g_ship.x, g_ship.y), 20 * g_scale_factor, Cfg.colors['blue_glow'])
     
     if g_ship.powerup_flash > 0:
         draw_powerup_flash(surface)
@@ -3035,7 +2922,9 @@ def draw_respawn_animation(surface: pygame.Surface) -> None:
         radius = (Cfg.respawn_spiral_radius_start * (1 - progress) - i * Cfg.respawn_spiral_radius_step) * g_scale_factor
         if radius > 0:
             alpha = (1 - progress) * (1 - i * 0.3)
-            DrawEffects.glow(surface, (g_ship.x, g_ship.y), radius, 
+            if g_drawing:
+
+                g_drawing.glow(surface, (g_ship.x, g_ship.y), radius, 
                            Cfg.colors['blue_glow'], alpha)
     
     if progress > Cfg.level_text_appear_threshold:
@@ -3076,11 +2965,17 @@ def draw_finisher_aura(surface: pygame.Surface) -> None:
         px = g_ship.x + cos_a * radius
         py = g_ship.y + sin_a * radius
         
-        DrawEffects.glow(surface, (px, py), 6 * g_scale_factor, Cfg.colors['gold'])
+        if g_drawing:
+
+        
+            g_drawing.glow(surface, (px, py), 6 * g_scale_factor, Cfg.colors['gold'])
         pygame.draw.circle(surface, Cfg.colors['gold'], (int(px), int(py)), 
                           int(2 * g_scale_factor))
     
-    DrawEffects.glow(surface, (g_ship.x, g_ship.y), 25 * g_scale_factor * pulse, 
+    if g_drawing:
+
+    
+        g_drawing.glow(surface, (g_ship.x, g_ship.y), 25 * g_scale_factor * pulse, 
                     Cfg.colors['gold'], pulse)
 
 def draw_powerup_flash(surface: pygame.Surface) -> None:
@@ -3098,7 +2993,9 @@ def draw_powerup_flash(surface: pygame.Surface) -> None:
     
     if flash_intensity > 0:
         radius = (25 + 15 * flash_intensity) * g_scale_factor
-        DrawEffects.glow(surface, (g_ship.x, g_ship.y), radius, 
+        if g_drawing:
+
+            g_drawing.glow(surface, (g_ship.x, g_ship.y), radius, 
                         g_ship.powerup_flash_color, flash_intensity)
 
 def draw_ship_body(surface: pygame.Surface) -> None:
@@ -3213,7 +3110,9 @@ def draw_powerup_auras(surface: pygame.Surface) -> None:
             y = g_ship.y + sin_a * radius
             
             pygame.draw.circle(surface, (0, 255, 255), (int(x), int(y)), int(3 * g_scale_factor))
-            DrawEffects.glow(surface, (x, y), 8 * g_scale_factor, (0, 255, 255))
+            if g_drawing:
+
+                g_drawing.glow(surface, (x, y), 8 * g_scale_factor, (0, 255, 255))
 
 def draw_powerups(surface: pygame.Surface) -> None:
     """Draw all powerup entities.
@@ -3228,7 +3127,10 @@ def draw_powerups(surface: pygame.Surface) -> None:
         pulse = calculate_pulse(powerup.pulse, 1.0)
         color = Cfg.powerup_types[powerup.type]['color']
         
-        DrawEffects.glow(surface, (powerup.x, powerup.y), 25 * pulse * g_scale_factor, 
+        if g_drawing:
+
+        
+            g_drawing.glow(surface, (powerup.x, powerup.y), 25 * pulse * g_scale_factor, 
                         color, pulse)
         
         symbol_text = g_small_font.render(Cfg.powerup_types[powerup.type]['symbol'], True, color)
@@ -3268,7 +3170,10 @@ def draw_bullets(surface: pygame.Surface) -> None:
                 color = tuple(int(c * alpha * m) for c, m in zip((255, 255, 255), (0.8, 0.8, 0.4)))
                 pygame.draw.circle(surface, color, (int(pos[0]), int(pos[1])), radius)
         
-        DrawEffects.glow(surface, (bullet.x, bullet.y), scaled(Cfg.bullet_radius * 4), 
+        if g_drawing:
+
+        
+            g_drawing.glow(surface, (bullet.x, bullet.y), scaled(Cfg.bullet_radius * 4), 
                         (255, 255, 0))
         pygame.draw.circle(surface, Cfg.colors['bullet'], (int(bullet.x), int(bullet.y)), 
                          int(3 * g_scale_factor))
@@ -3281,7 +3186,10 @@ def draw_bullets(surface: pygame.Surface) -> None:
                 color = tuple(int(c * alpha * m) for c, m in zip((255, 255, 255), (1.0, 0.4, 0.4)))
                 pygame.draw.circle(surface, color, (int(pos[0]), int(pos[1])), radius)
         
-        DrawEffects.glow(surface, (bullet.x, bullet.y), scaled(Cfg.bullet_radius * 4) * 0.8, 
+        if g_drawing:
+
+        
+            g_drawing.glow(surface, (bullet.x, bullet.y), scaled(Cfg.bullet_radius * 4) * 0.8, 
                         (255, 100, 100), 0.8)
         pygame.draw.circle(surface, Cfg.colors['enemy_bullet'], (int(bullet.x), int(bullet.y)), 
                          int(3 * g_scale_factor))
@@ -3320,7 +3228,9 @@ def draw_particles(surface: pygame.Surface) -> None:
                 glow_factor = renderer.get('glow_factor', 0.5)
                 glow_color = tuple(max(0, min(255, int(c * life_ratio * glow_factor))) 
                                  for c in particle.color)
-                DrawEffects.glow(surface, (particle.x, particle.y), 
+                if g_drawing:
+
+                    g_drawing.glow(surface, (particle.x, particle.y), 
                                radius * glow_radius, glow_color, life_ratio * glow_factor)
 
 # === [FINISHER DRAWING] ===
@@ -3347,7 +3257,9 @@ def draw_finisher_target_indicator(surface: pygame.Surface) -> None:
     
     for i in range(3):
         radius = (target.radius + 15 + i * 5) * pulse * g_scale_factor
-        DrawEffects.glow(surface, (target.x, target.y), radius, Cfg.colors['gold'], pulse)
+        if g_drawing:
+
+            g_drawing.glow(surface, (target.x, target.y), radius, Cfg.colors['gold'], pulse)
     
     draw_target_reticle(surface, target, pulse)
     draw_dash_preview(surface, target, pulse)
@@ -3628,7 +3540,9 @@ def draw_score_and_combo(surface: pygame.Surface, y_offset: int) -> None:
             glow_radius = int((10 + combo['current']) * g_scale_factor)
             if kills_until_pulse <= 2:
                 glow_radius = int(glow_radius * 1.5)
-            DrawEffects.glow(surface, (combo_rect.centerx, combo_rect.centery), 
+            if g_drawing:
+
+                g_drawing.glow(surface, (combo_rect.centerx, combo_rect.centery), 
                            glow_radius, combo_color)
         
         surface.blit(combo_text, combo_rect)
@@ -3751,7 +3665,9 @@ def draw_finisher_meter(surface: pygame.Surface, y_offset: int) -> None:
         if has_valid_target:
             finisher_text = g_text_cache.get_text("FINISHER LOCKED!", g_small_font, Cfg.colors['gold'])
             text_rect = finisher_text.get_rect(topleft=(bar_x, y_offset + meter_height + 2))
-            DrawEffects.glow(surface, (text_rect.centerx, text_rect.centery), 
+            if g_drawing:
+
+                g_drawing.glow(surface, (text_rect.centerx, text_rect.centery), 
                            int(40 * g_scale_factor), Cfg.colors['gold'])
         else:
             finisher_text = g_text_cache.get_text("FINISHER READY!", g_small_font, Cfg.colors['gold'])
@@ -3836,7 +3752,9 @@ def draw_floating_texts(surface: pygame.Surface) -> None:
         Reads g_floating_texts
     """
     for text in g_floating_texts:
-        DrawEffects.floating_text(surface, text)
+        if g_drawing:
+
+            g_drawing.floating_text(surface, text)
 
 # === [VISUAL EFFECTS DRAWING] ===
 # Visual effects moved to visual_effects.py module
