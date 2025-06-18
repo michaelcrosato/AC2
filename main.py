@@ -1,60 +1,72 @@
 """
-ASTEROIDS ENHANCED - A Single-File Game Optimized for LLM Development
-Version: 6.0.0 (Optimized Edition)
-Created: December 2024
-Lead Programmer: Claude 4 Opus/Sonnet (Anthropic)
+ASTEROIDS ENHANCED - LLM-Optimized Modular Game Architecture
+Version: 7.0.0 (Modular Edition)
+Last Updated: June, 18 2025
+Lead Programmers: Claude 4 Opus/Sonnet (Anthropic)
 Code Reviewers: ChatGPT 4o/4.1, Grok 3, Gemini 2.5 Pro
+Architecture Evolution: Single-file @ 5,500 lines → Modular 
 
-DESIGN PHILOSOPHY & GOALS:
-This codebase is specifically designed for LLM-assisted development. The single-file 
-architecture is INTENTIONAL. Key principles:
-1. Maximum Context Visibility: Everything in one file so LLMs can see all dependencies
-2. Clear Data Flow: Organized globals for state that needs game-wide access
-3. Explicit Over Implicit: Clear naming and structure over clever shortcuts
-4. Performance Where It Matters: Object pooling, caching where beneficial
-5. Maintainable Clarity: Readable code preferred over maximum compression
+DESIGN PHILOSOPHY & EVOLUTION:
+Originally designed as a single-file system for maximum LLM context visibility.
+Modularized when file size exceeded reliable LLM editing capabilities (~5,000 lines).
+Current architecture balances LLM comprehension with maintainable file sizes.
+
+KEY PRINCIPLES (Updated for Modular Architecture):
+1. File Size Limits: Keep modules <5,000 lines for reliable LLM editing
+2. Dependency Injection: Avoid circular imports via function passing
+3. Explicit State: Full paths (g_game_state['effects']['screen_shake'])
+4. Clear Side Effects: Document all state modifications
+5. Context Objects: Bundle parameters to reduce function signatures
+6. Fail Safely: Wrap risky operations in try-except blocks
+7. Copy Don't Abstract: Duplicate similar code rather than over-generalize
+
+MODULE STRUCTURE:
+- main.py (This file): Core loop, coordination, game state management
+- config.py: All constants and configuration (Cfg.*)
+- data_structures.py: Entity types (ShipState, Asteroid, Enemy, etc.)
+- particle_system.py: ParticlePool for efficient particle management
+- sound_system.py: Audio generation and playback (optional)
+- visual_effects.py: Rendering effects (stars, dust, transitions)
+- progression_system.py: Save/load, achievements, upgrades
+- drawing_system.py: Centralized drawing operations
 
 MODIFICATION GUIDANCE:
-When modifying this code, prefer explicit state, verbose logic, and avoid splitting 
-into modules unless project goals change. The single-file structure is a feature, not 
-technical debt.
+- Prefer explicit state and verbose logic for LLM clarity
+- Use dependency injection pattern when adding new systems
+- Create wrapper functions during migration to maintain compatibility
+- Would return to single-file if LLM capabilities improve
+- Document side effects meticulously - next LLM depends on it
 
-=== [SECTION INDEX] ===
-1. Imports and System Setup
-2. Enumerations
-3. Data Structures
-4. Configuration Namespace
-5. Global State Variables
-6. Helper Functions
-7. Drawing Effects System
-8. Particle System
-9. Text Cache System
-10. Save/Load System
-11. Achievements System
-12. Upgrades System
-13. Sound System
-14. Controller System
-15. Window Management
-16. Object Creation
-17. Particle Effects
-18. Combat Mechanics
-19. Finisher Mechanics
-20. Collision Detection
-21. Movement and Physics
-22. Enemy AI
-23. Game Object Updates
-24. Visual Effects
-25. Level Management
-26. Object Drawing
-27. Finisher Drawing
-28. UI Drawing
-29. Visual Effects Drawing
-30. Menu Drawing
-31. Rendering System
-32. Game Reset
-33. Sound Generation
-34. Main Game Loop
-35. Entry Point
+=== [SECTION INDEX - main.py] ===
+1. Imports and Module Integration
+2. Global State Variables
+3. Helper Functions
+4. Text Cache System
+5. Progression System Wrappers
+6. API: Initialization
+7. Controller System
+8. Window Management
+9. Object Creation
+10. Particle Effects
+11. Combat Mechanics
+12. Finisher Mechanics
+13. Collision Detection
+14. Movement and Physics
+15. Enemy AI
+16. Game Object Updates
+17. Visual Effects Management
+18. Level Management
+19. Finisher Target Detection
+20. UI State Management
+21. Rendering Coordination
+22. Game Reset
+23. Main Game Loop
+24. Entry Point
+
+Note: Drawing operations → drawing_system.py
+      Sound operations → sound_system.py
+      Visual effects → visual_effects.py
+      Save/Load → progression_system.py
 """
 
 import pygame
@@ -69,6 +81,7 @@ from typing import Dict, List, Tuple, Optional, Any, Union, Protocol, Callable, 
 from dataclasses import dataclass, field
 
 # Import sound system
+import sound_system
 from sound_system import (
     init_sounds, play_sound, stop_thrust_sound, stop_all_sounds, 
     toggle_sound, get_sound_enabled, set_sound_enabled, SoundConfig
@@ -205,8 +218,7 @@ g_enemy_bullets: List[Bullet] = []
 
 # Visual effects are now in visual_effects module
 
-# Sounds
-g_sounds: Dict[str, pygame.mixer.Sound] = {}
+# Sounds are imported from sound_system module
 
 # === [HELPER FUNCTIONS] ===
 
@@ -2297,13 +2309,14 @@ def update_ship(keys: dict, controller_input: Dict[str, Any]) -> None:
             thrust = Cfg.ship_thrust_power
             create_thruster_particles()
             
-            if Cfg.sound_enabled and 'thrust' in g_sounds and not g_game_state['thrust_sound_playing']:
-                g_sounds['thrust'].play(-1)
+            if get_sound_enabled() and 'thrust' in sound_system.g_sounds and not g_game_state['thrust_sound_playing']:
+                sound_system.g_sounds['thrust'].play(-1)
                 g_game_state['thrust_sound_playing'] = True
         elif keys[pygame.K_DOWN] or controller_input['reverse']:
             thrust = -Cfg.ship_thrust_power * Cfg.ship_reverse_thrust_multiplier
         else:
             stop_thrust_sound()
+            g_game_state['thrust_sound_playing'] = False
         
         if thrust != 0:
             g_ship.vel_x += cos_a * scaled(thrust) * g_game_state['time_scale']
@@ -2364,6 +2377,7 @@ def reset_ship() -> None:
         Reads/writes g_ship, reads g_screen_width/height
     """
     stop_thrust_sound()
+    g_game_state['thrust_sound_playing'] = False
     
     g_ship.x = g_screen_width // 2
     g_ship.y = g_screen_height // 2
