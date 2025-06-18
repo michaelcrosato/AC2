@@ -36,17 +36,16 @@ class ParticlePool:
             return particle
         return None
     
-    def update(self, time_scale: float) -> None:
+    def update(self, time_scale: float, ship=None) -> None:
         """Update all active particles.
         
         Args:
             time_scale: Time scaling factor for slow-mo effects
+            ship: Ship object for streak particle attraction (optional)
         
         Side effects:
             Modifies particle positions and life, manages active/inactive lists
         """
-        # Import here to avoid circular imports
-        from main import g_ship
         
         new_active = []
         
@@ -58,9 +57,9 @@ class ParticlePool:
             particle.life -= time_scale
             
             # Special behavior for streak particles
-            if particle.type == ParticleType.STREAK and particle.life > Cfg.particle_streak_min_life:
-                dx = g_ship.x - particle.x
-                dy = g_ship.y - particle.y
+            if particle.type == ParticleType.STREAK and particle.life > Cfg.particle_streak_min_life and ship:
+                dx = ship.x - particle.x
+                dy = ship.y - particle.y
                 dist_sq = dx * dx + dy * dy
                 if dist_sq > Cfg.particle_streak_attraction_distance:
                     dist = math.sqrt(dist_sq)
