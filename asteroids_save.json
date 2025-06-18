@@ -1,0 +1,17 @@
+{
+  "high_score": 14729,
+  "lifetime_crystals": 1570,
+  "achievements_unlocked": [
+    "crystal_hoarder",
+    "combo_10",
+    "first_blood",
+    "combo_5"
+  ],
+  "upgrade_levels": {
+    "damage": 0,
+    "fire_rate": 0,
+    "max_speed": 0,
+    "dash_cooldown": 0
+  },
+  "boss_kills": 0
+}
