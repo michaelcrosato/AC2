@@ -179,18 +179,19 @@ class DrawingSystem:
     
     def _get_ship_points(self, x: float, y: float, angle: float, scale_mult: float = 1.0) -> List[Tuple[float, float]]:
         """Get ship polygon points."""
-        scale_factor = self.get_scale_factor()
         sin_a, cos_a = self._get_sin_cos(angle)
-        scaled_radius = Cfg.ship_radius * scale_factor * scale_mult
-        back_indent = Cfg.ship_back_indent * scale_factor * scale_mult
+        sin_wing_left, cos_wing_left = self._get_sin_cos(angle + Cfg.ship_wing_angle)
+        sin_wing_right, cos_wing_right = self._get_sin_cos(angle - Cfg.ship_wing_angle)
         
         return [
-            (x + scaled_radius * cos_a, y + scaled_radius * sin_a),
-            (x - back_indent * cos_a + scaled_radius * 0.5 * cos_a - scaled_radius * 0.5 * sin_a,
-             y - back_indent * sin_a + scaled_radius * 0.5 * sin_a + scaled_radius * 0.5 * cos_a),
-            (x - back_indent * cos_a, y - back_indent * sin_a),
-            (x - back_indent * cos_a + scaled_radius * 0.5 * cos_a + scaled_radius * 0.5 * sin_a,
-             y - back_indent * sin_a + scaled_radius * 0.5 * sin_a - scaled_radius * 0.5 * cos_a),
+            (x + self._scaled(Cfg.ship_nose_length) * cos_a * scale_mult, 
+             y + self._scaled(Cfg.ship_nose_length) * sin_a * scale_mult),
+            (x + self._scaled(Cfg.ship_wing_length) * cos_wing_left * scale_mult, 
+             y + self._scaled(Cfg.ship_wing_length) * sin_wing_left * scale_mult),
+            (x - self._scaled(Cfg.ship_back_indent) * cos_a * scale_mult, 
+             y - self._scaled(Cfg.ship_back_indent) * sin_a * scale_mult),
+            (x + self._scaled(Cfg.ship_wing_length) * cos_wing_right * scale_mult, 
+             y + self._scaled(Cfg.ship_wing_length) * sin_wing_right * scale_mult)
         ]
     
     def _scaled(self, value: float) -> float:
