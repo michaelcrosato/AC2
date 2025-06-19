@@ -1,0 +1,5 @@
+[flake8]
+max-line-length = 125
+ignore = W291,W292,W293,F401,F402,F824,E722,W503,E203,F841
+exclude = __pycache__,.git,.venv,venv
+per-file-ignores = main.py:F821 

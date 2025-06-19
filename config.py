@@ -10,32 +10,32 @@ from data_structures import PowerUpType, EnemyAIType, ParticleType, FinisherPhas
 
 class Cfg:
     """Centralized game configuration."""
-    
+
     # Screen settings
     screen_width: int = 800
     screen_height: int = 600
     fps: int = 60
     reference_height: int = 600
-    
+
     # Color palette
     colors = {
-        'black': (0, 0, 10),
-        'white': (255, 255, 255),
-        'blue_glow': (100, 150, 255),
-        'asteroid': (200, 200, 255),
-        'bullet': (255, 255, 100),
-        'star': (100, 100, 150),
-        'crystal': (150, 255, 255),
-        'enemy': (255, 100, 100),
-        'boss': (255, 50, 50),
-        'gold': (255, 215, 0),
-        'damage_flash': (255, 0, 0),
-        'shield_flash': (0, 150, 255),
-        'dash': (100, 200, 255),
-        'score_text': (255, 255, 100),
-        'enemy_bullet': (255, 150, 150)
+        "black": (0, 0, 10),
+        "white": (255, 255, 255),
+        "blue_glow": (100, 150, 255),
+        "asteroid": (200, 200, 255),
+        "bullet": (255, 255, 100),
+        "star": (100, 100, 150),
+        "crystal": (150, 255, 255),
+        "enemy": (255, 100, 100),
+        "boss": (255, 50, 50),
+        "gold": (255, 215, 0),
+        "damage_flash": (255, 0, 0),
+        "shield_flash": (0, 150, 255),
+        "dash": (100, 200, 255),
+        "score_text": (255, 255, 100),
+        "enemy_bullet": (255, 150, 150),
     }
-    
+
     # Ship parameters
     ship_max_speed: float = 6.4
     ship_turn_speed: int = 6
@@ -52,7 +52,7 @@ class Cfg:
     ship_invulnerability_time: int = 120
     ship_respawn_duration: int = 90
     ship_thruster_particle_count: int = 2
-    
+
     # Weapon settings
     bullet_radius: int = 2
     bullet_speed: int = 12
@@ -63,7 +63,7 @@ class Cfg:
     bullet_trail_length: int = 8
     enemy_bullet_trail_length: int = 6
     enemy_bullet_speed_mult: float = 0.8
-    
+
     # Asteroid settings
     asteroid_min_size: int = 1
     asteroid_max_size: int = 3
@@ -79,7 +79,7 @@ class Cfg:
     asteroid_vertex_count: int = 8
     asteroid_shape_variance_min: int = 8
     asteroid_shape_variance_max: int = 12
-    
+
     # Boss settings
     boss_health: int = 50
     boss_spawn_interval: int = 5
@@ -91,7 +91,7 @@ class Cfg:
     boss_health_bar_width: int = 100
     boss_health_bar_height: int = 8
     boss_health_bar_offset: int = 20
-    
+
     # Enemy settings
     enemy_speed: float = 1.5
     enemy_fire_rate: int = 90
@@ -113,20 +113,13 @@ class Cfg:
     enemy_min_fire_distance: int = 50
     enemy_max_fire_distance: int = 250
     enemy_crystal_drop_chance: float = 0.5
-    
+
     # Enemy AI parameters
     enemy_ai = {
-        'hunter': {
-            'approach_rate': 0.05,
-            'retreat_rate': 0.1
-        },
-        'circler': {
-            'orbit_speed': 1.5,
-            'orbit_radius': 180,
-            'approach_rate': 0.08
-        }
+        "hunter": {"approach_rate": 0.05, "retreat_rate": 0.1},
+        "circler": {"orbit_speed": 1.5, "orbit_radius": 180, "approach_rate": 0.08},
     }
-    
+
     # Dash mechanics
     dash_cooldown: int = 120
     dash_duration: int = 15
@@ -134,7 +127,7 @@ class Cfg:
     dash_trail_max_length: int = 10
     dash_trail_particle_count: int = 3
     dash_trail_offset_range: int = 10
-    
+
     # Finisher mechanics
     finisher_lock_on_time: int = 30
     finisher_pre_impact_time: int = 6
@@ -155,22 +148,18 @@ class Cfg:
     finisher_shockwave_rings: int = 48
     finisher_ring_count: int = 3
     finisher_invuln_buffer: float = 0.5
-    
+
     # Combo system
     combo_timeout: int = 180
     combo_pulse_interval: int = 10
     combo_pulse_max_alpha: int = 100
     combo_milestone_thresholds = [5, 10, 15, 20]
     combo_text_threshold: int = 5
-    combo_fill_rates = {
-        'base': 10,
-        'medium': 15,
-        'high': 20
-    }
+    combo_fill_rates = {"base": 10, "medium": 15, "high": 20}
     combo_medium_threshold: int = 5
     combo_high_threshold: int = 10
     combo_max_pulse: int = 20
-    
+
     # Powerup settings
     powerup_drop_chance: float = 0.2
     powerup_lifetime: int = 600
@@ -188,7 +177,7 @@ class Cfg:
     powerup_crystal_chance: float = 0.3
     powerup_area_scaling_factor: float = 0.3
     powerup_hexagon_vertices: int = 6
-    
+
     # Particle system
     particle_limit: int = 500
     particle_base_life: int = 30
@@ -215,7 +204,7 @@ class Cfg:
     particle_dash_trail_life: int = 20
     particle_powerup_flash_duration: int = 20
     particle_powerup_flash_max: int = 30
-    
+
     # UI layout
     ui_margin: int = 10
     ui_element_spacing: int = 40
@@ -240,7 +229,7 @@ class Cfg:
     ui_pause_menu_y_start: int = 150
     ui_pause_menu_line_spacing: int = 35
     ui_pause_menu_achievement_offset: int = 20
-    
+
     # Visual effects
     screen_shake_decay: int = 1
     max_screen_shake: int = 20
@@ -280,7 +269,7 @@ class Cfg:
     combo_edge_alpha_decay: float = 0.3
     pause_fade_speed: int = 15
     game_over_fade_speed: int = 3
-    
+
     # Sound settings
     sound_enabled: bool = False
     sound_master_volume: float = 0.3
@@ -289,114 +278,114 @@ class Cfg:
     sound_thrust_volume: float = 0.15
     sound_shoot_variations: int = 3
     sound_explosion_variations: int = 2
-    
+
     # Controller mappings
     controller_deadzone: float = 0.25
     controller_turn_multiplier: float = 1.2
     controller_axis_threshold: float = 0.5
     controller_buttons = {
-        'shoot': [0],
-        'thrust': [1],
-        'reverse': [2],
-        'dash': [3],
-        'toggle_sound': [6],
-        'restart': [7],
+        "shoot": [0],
+        "thrust": [1],
+        "reverse": [2],
+        "dash": [3],
+        "toggle_sound": [6],
+        "restart": [7],
     }
-    
+
     # Upgrade definitions
     upgrades = {
-        'damage': {
-            'name': 'Damage',
-            'max_level': 5,
-            'cost_multiplier': 1.5,
-            'base_cost': 100,
-            'description': 'Increases bullet damage',
-            'multiplier_per_level': 0.2
+        "damage": {
+            "name": "Damage",
+            "max_level": 5,
+            "cost_multiplier": 1.5,
+            "base_cost": 100,
+            "description": "Increases bullet damage",
+            "multiplier_per_level": 0.2,
         },
-        'fire_rate': {
-            'name': 'Fire Rate',
-            'max_level': 5,
-            'cost_multiplier': 1.4,
-            'base_cost': 80,
-            'description': 'Shoot faster',
-            'reduction_per_level': 0.1
+        "fire_rate": {
+            "name": "Fire Rate",
+            "max_level": 5,
+            "cost_multiplier": 1.4,
+            "base_cost": 80,
+            "description": "Shoot faster",
+            "reduction_per_level": 0.1,
         },
-        'max_speed': {
-            'name': 'Max Speed',
-            'max_level': 5,
-            'cost_multiplier': 1.3,
-            'base_cost': 60,
-            'description': 'Increase ship speed',
-            'multiplier_per_level': 0.15
+        "max_speed": {
+            "name": "Max Speed",
+            "max_level": 5,
+            "cost_multiplier": 1.3,
+            "base_cost": 60,
+            "description": "Increase ship speed",
+            "multiplier_per_level": 0.15,
         },
-        'dash_cooldown': {
-            'name': 'Dash Cooldown',
-            'max_level': 3,
-            'cost_multiplier': 2.0,
-            'base_cost': 150,
-            'description': 'Dash more frequently',
-            'reduction_per_level': 20
-        }
+        "dash_cooldown": {
+            "name": "Dash Cooldown",
+            "max_level": 3,
+            "cost_multiplier": 2.0,
+            "base_cost": 150,
+            "description": "Dash more frequently",
+            "reduction_per_level": 20,
+        },
     }
-    
+
     # Achievement definitions
     achievements = {
-        'first_blood': {'name': 'First Blood', 'desc': 'Destroy your first asteroid', 'reward': 50},
-        'combo_5': {'name': 'Combo x5', 'desc': 'Get a 5x combo', 'reward': 100},
-        'combo_10': {'name': 'Combo Master', 'desc': 'Get a 10x combo', 'reward': 200},
-        'survivor': {'name': 'Survivor', 'desc': 'Reach level 10', 'reward': 300},
-        'boss_slayer': {'name': 'Boss Slayer', 'desc': 'Defeat your first boss', 'reward': 500},
-        'untouchable': {'name': 'Untouchable', 'desc': 'Complete level undamaged', 'reward': 200},
-        'speed_demon': {'name': 'Speed Demon', 'desc': 'Max out speed upgrade', 'reward': 150},
-        'crystal_hoarder': {'name': 'Crystal Hoarder', 'desc': 'Collect 1000 crystals', 'reward': 250}
+        "first_blood": {"name": "First Blood", "desc": "Destroy your first asteroid", "reward": 50},
+        "combo_5": {"name": "Combo x5", "desc": "Get a 5x combo", "reward": 100},
+        "combo_10": {"name": "Combo Master", "desc": "Get a 10x combo", "reward": 200},
+        "survivor": {"name": "Survivor", "desc": "Reach level 10", "reward": 300},
+        "boss_slayer": {"name": "Boss Slayer", "desc": "Defeat your first boss", "reward": 500},
+        "untouchable": {"name": "Untouchable", "desc": "Complete level undamaged", "reward": 200},
+        "speed_demon": {"name": "Speed Demon", "desc": "Max out speed upgrade", "reward": 150},
+        "crystal_hoarder": {
+            "name": "Crystal Hoarder",
+            "desc": "Collect 1000 crystals",
+            "reward": 250,
+        },
     }
-    
+
     # Achievement thresholds
     achievement_survivor_level: int = 10
     achievement_speed_demon_level: int = 5
     achievement_crystal_hoarder_amount: int = 1000
-    
+
     # Powerup type definitions
     powerup_types = {
-        PowerUpType.RAPID: {'color': (255, 100, 0), 'symbol': 'R'},
-        PowerUpType.TRIPLE: {'color': (0, 255, 255), 'symbol': '3'},
-        PowerUpType.SHIELD: {'color': (0, 255, 0), 'symbol': 'S'},
-        PowerUpType.LIFE: {'color': (255, 0, 255), 'symbol': '♥'},
-        PowerUpType.CRYSTAL: {'color': (150, 255, 255), 'symbol': '◆'}
+        PowerUpType.RAPID: {"color": (255, 100, 0), "symbol": "R"},
+        PowerUpType.TRIPLE: {"color": (0, 255, 255), "symbol": "3"},
+        PowerUpType.SHIELD: {"color": (0, 255, 0), "symbol": "S"},
+        PowerUpType.LIFE: {"color": (255, 0, 255), "symbol": "♥"},
+        PowerUpType.CRYSTAL: {"color": (150, 255, 255), "symbol": "◆"},
     }
-    
+
     # Particle renderer definitions
     particle_renderers = {
         ParticleType.STREAK: {
-            'radius_calc': lambda p, s: max(1, int(4 * (p.life / 30.0) ** 0.5 * s)),
-            'has_glow': True,
-            'glow_factor': 0.5
+            "radius_calc": lambda p, s: max(1, int(4 * (p.life / 30.0) ** 0.5 * s)),
+            "has_glow": True,
+            "glow_factor": 0.5,
         },
         ParticleType.RESPAWN: {
-            'radius_calc': lambda p, s: max(1, int(3 * (p.life / Cfg.particle_base_life) * s)),
-            'has_glow': True,
-            'glow_factor': 0.7,
-            'glow_radius': 3
+            "radius_calc": lambda p, s: max(1, int(3 * (p.life / Cfg.particle_base_life) * s)),
+            "has_glow": True,
+            "glow_factor": 0.7,
+            "glow_radius": 3,
         },
         ParticleType.DASH: {
-            'radius_calc': lambda p, s: max(1, int(2 * (p.life / Cfg.particle_base_life) * s)),
-            'has_glow': lambda p: p.life / Cfg.particle_base_life > 0.5,
-            'glow_radius': 2
+            "radius_calc": lambda p, s: max(1, int(2 * (p.life / Cfg.particle_base_life) * s)),
+            "has_glow": lambda p: p.life / Cfg.particle_base_life > 0.5,
+            "glow_radius": 2,
         },
         ParticleType.FINISHER: {
-            'radius_calc': lambda p, s: max(1, int((3 + p.life // 8) * s)),
-            'has_glow': lambda p: p.life / Cfg.particle_base_life > 0.5,
-            'glow_radius': 2
-        }
+            "radius_calc": lambda p, s: max(1, int((3 + p.life // 8) * s)),
+            "has_glow": lambda p: p.life / Cfg.particle_base_life > 0.5,
+            "glow_radius": 2,
+        },
     }
-    
+
     # Explosion lookup table
-    explosion_config = {
-        3: ((255, 150, 50), 30),
-        2: ((200, 200, 100), 20),
-        1: ((150, 150, 255), 15)
-    }
-    
+    explosion_config = {3: ((255, 150, 50), 30), 2: ((200, 200, 100), 20), 1: ((150, 150, 255), 15)}
+
     # Drawing effect constants (extracted from magic numbers)
     glow_default_layers: int = 3
     glow_layer_alpha_base: int = 50
@@ -417,13 +406,13 @@ class Cfg:
     finisher_reticle_thickness: int = 3
     finisher_dash_preview_segments: int = 15
     finisher_dash_preview_alpha: int = 80
-    
+
     # Save file path
-    save_file: str = 'asteroids_save.json'
-    
+    save_file: str = "asteroids_save.json"
+
     # UI Magic Number Constants (extracted for clarity)
     ship_invulnerability_blink_interval: int = 10
     ship_invulnerability_blink_visible_frames: int = 5
     pause_debounce_frames: int = 20
     frame_visibility_check_modulo: int = 4
-    controller_input_check_modulo: int = 2 
+    controller_input_check_modulo: int = 2

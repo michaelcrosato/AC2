@@ -11,42 +11,47 @@ from typing import List, Dict, Any, Tuple, Optional
 
 class PowerUpType(Enum):
     """Power-up types available in the game."""
-    RAPID = 'rapid'
-    TRIPLE = 'triple'
-    SHIELD = 'shield'
-    LIFE = 'life'
-    CRYSTAL = 'crystal'
+
+    RAPID = "rapid"
+    TRIPLE = "triple"
+    SHIELD = "shield"
+    LIFE = "life"
+    CRYSTAL = "crystal"
 
 
 class EnemyAIType(Enum):
     """Enemy AI behavior types."""
-    HUNTER = 'hunter'
-    CIRCLER = 'circler'
+
+    HUNTER = "hunter"
+    CIRCLER = "circler"
 
 
 class ParticleType(Enum):
     """Particle effect types."""
-    STREAK = 'streak'
-    RESPAWN = 'respawn'
-    DASH = 'dash'
-    FINISHER = 'finisher'
-    ENEMY_EXPLOSION = 'enemy_explosion'
-    BURST = 'burst'
-    DEFAULT = 'default'
+
+    STREAK = "streak"
+    RESPAWN = "respawn"
+    DASH = "dash"
+    FINISHER = "finisher"
+    ENEMY_EXPLOSION = "enemy_explosion"
+    BURST = "burst"
+    DEFAULT = "default"
 
 
 class FinisherPhase(Enum):
     """Finisher execution phases."""
-    IDLE = 'idle'
-    LOCK_ON = 'lock_on'
-    PRE_IMPACT = 'pre_impact'
-    IMPACT = 'impact'
-    POST_IMPACT = 'post_impact'
+
+    IDLE = "idle"
+    LOCK_ON = "lock_on"
+    PRE_IMPACT = "pre_impact"
+    IMPACT = "impact"
+    POST_IMPACT = "post_impact"
 
 
 @dataclass
 class ShipState:
     """Complete state for the player ship."""
+
     x: float
     y: float
     angle: float = 0.0
@@ -67,6 +72,7 @@ class ShipState:
 @dataclass
 class Asteroid:
     """Asteroid game object."""
+
     x: float
     y: float
     vx: float
@@ -86,6 +92,7 @@ class Asteroid:
 @dataclass
 class Bullet:
     """Projectile fired by ship or enemies."""
+
     x: float
     y: float
     vx: float
@@ -97,6 +104,7 @@ class Bullet:
 @dataclass
 class Enemy:
     """Enemy ship game object."""
+
     x: float
     y: float
     vx: float = 0.0
@@ -114,6 +122,7 @@ class Enemy:
 @dataclass
 class PowerUp:
     """Collectible power-up game object."""
+
     x: float
     y: float
     vx: float
@@ -126,6 +135,7 @@ class PowerUp:
 @dataclass
 class Particle:
     """Visual effect particle."""
+
     active: bool = False
     x: float = 0.0
     y: float = 0.0
@@ -139,9 +149,10 @@ class Particle:
 @dataclass
 class FloatingText:
     """UI floating text effect."""
+
     x: float
     y: float
     text: str
     color: Tuple[int, int, int]
     life: float
-    vy: float 
+    vy: float
