@@ -1,12 +1,12 @@
 {
   "high_score": 14729,
-  "lifetime_crystals": 2310,
+  "lifetime_crystals": 2330,
   "achievements_unlocked": [
+    "untouchable",
     "combo_5",
-    "first_blood",
-    "combo_10",
     "crystal_hoarder",
-    "untouchable"
+    "combo_10",
+    "first_blood"
   ],
   "upgrade_levels": {
     "damage": 0,
